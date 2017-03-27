@@ -1,0 +1,22 @@
+#! /bin/sh -e
+
+_ROOT="$(pwd)" && cd "$(dirname "$0")" && ROOT="$(pwd)"
+cd "$ROOT"
+
+INTERMEDIATECA="$(sed -rn 's;^ *_CANAME_ *= *(.+)$;\1;p' openssl.cnf)"
+if [ -z "$INTERMEDIATECA" ]; then
+    echo "ERROR: _CANAME_ not given in openssl.cnf file"
+    exit 1
+fi
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 {identify}"
+    echo "e.g. $0 api.paadoo.net"
+    exit 1
+else
+    NAME=$1
+fi
+
+
+openssl ca -config openssl.cnf -revoke "certs/$NAME.crt"
+openssl ca -config openssl.cnf -gencrl | openssl crl -inform PEM -outform DER -out "$INTERMEDIATECA.crl"

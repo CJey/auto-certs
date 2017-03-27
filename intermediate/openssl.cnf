@@ -1,0 +1,48 @@
+# OpenSSL configuration file of LikeIT
+_CANAME_ = LikeNetworkCoLtd
+
+[ ca ]
+default_ca = likeca
+
+[ crl_ext ]
+issuerAltName=issuer:copy 
+authorityKeyIdentifier=keyid:always
+
+[ likeca ]
+dir = .
+
+certs = $dir/certs
+new_certs_dir = $dir/newcerts
+database = $dir/index.txt
+serial = $dir/serial
+crlnumber = $dir/crlnumber
+
+certificate = $dir/../root/$_CANAME_.crt
+private_key = $dir/../root/$_CANAME_.key
+default_days = 730
+default_md = sha256
+default_crl_days = 730
+
+unique_subject = no
+policy = likeca_policy
+
+x509_extensions = likeca_extensions
+
+[ likeca_policy ]
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = optional
+commonName = supplied
+
+[ likeca_extensions ]
+basicConstraints = critical,CA:TRUE,pathlen:0
+keyUsage = critical,keyCertSign
+keyUsage = cRLSign,keyCertSign
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+crlDistributionPoints = @likeca_crl
+
+[ likeca_crl ]
+URI.0 = http://pki.likeit.cn/$_CANAME_.crl
+URI.1 = http://pki2.likeit.cn/$_CANAME_.crl

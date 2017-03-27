@@ -1,0 +1,18 @@
+#! /bin/sh
+
+_ROOT="$(pwd)" && cd "$(dirname "$0")" && ROOT="$(pwd)"
+cd "$ROOT"
+
+if [ ! -f index.txt ]; then
+    touch index.txt
+fi
+
+if [ ! -f serial ]; then
+    echo 1000 > serial
+fi
+
+if [ ! -f crlnumber ]; then
+    echo 1000 > crlnumber
+fi
+
+mkdir -p newcerts certs

@@ -1,0 +1,34 @@
+#! /bin/sh -e
+
+_ROOT="$(pwd)" && cd "$(dirname "$0")" && ROOT="$(pwd)"
+cd "$ROOT"
+
+SUBJ="/C=CN/ST=Shanghai/L=Shanghai/O=LikeIT"
+
+if [ $# -ne 2 ]; then
+    #echo "Usage: $0 {identify} {Common Name}"
+    #echo "e.g. $0 LikeNetworkCoLtd 'Like Network Co. Ltd.'"
+    #exit 1
+    NAME="LikeNetworkCoLtd"
+    SUBJ="${SUBJ}/CN=Like Network Co. Ltd."
+else
+    NAME=$1
+    SUBJ="$SUBJ/CN=$2"
+fi
+
+# RSA
+#openssl genrsa -out "$NAME.key" 2048
+# ECDSA
+openssl ecparam -out "$NAME.key" -name prime256v1 -genkey
+openssl req -new -key "$NAME.key" -out "$NAME.csr" -subj "$SUBJ"
+openssl x509 -req -signkey "$NAME.key" -in "$NAME.csr" -out "$NAME.crt" -days 7305 -sha256 -extfile openssl.cnf -extensions v3_ca
+
+PASS="$(openssl rand -base64 32)"
+openssl ec -aes-256-cbc -passout "pass:$PASS" -in "$NAME.key" -out "$NAME.key"
+echo
+echo "WARNING!!! 请妥善保管好 $NAME 的私钥保护密码"
+echo
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo "PASSWORD = $PASS"
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo

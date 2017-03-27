@@ -1,0 +1,103 @@
+# OpenSSL configuration file of LikeIT
+_CANAME_ = LikeNetwork-IG1
+
+[ ca ]
+default_ca = likeca
+
+[ crl_ext ]
+issuerAltName=issuer:copy 
+authorityKeyIdentifier=keyid:always
+
+[ likeca ]
+dir = .
+
+certs = $dir/certs
+new_certs_dir = $dir/newcerts
+database = $dir/index.txt
+serial = $dir/serial
+crlnumber = $dir/crlnumber
+
+certificate = $dir/../intermediate/certs/$_CANAME_.crt
+private_key = $dir/../intermediate/certs/$_CANAME_.key
+default_days = 730
+default_md = sha256
+default_crl_days = 730
+
+unique_subject = no
+policy = likeca_policy
+
+x509_extensions = likeca_extensions
+
+[ likeca_policy ]
+countryName = optional
+stateOrProvinceName = optional
+localityName = optional
+organizationName = optional
+commonName = supplied
+
+[ likeca_extensions ]
+basicConstraints = critical,CA:false
+extendedKeyUsage=serverAuth,clientAuth
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+crlDistributionPoints = @likeca_crl
+#subjectAltName = @likeca_alt_console.paadoo.net
+
+[ likeca_crl ]
+URI.0 = http://pki.likeit.cn/$_CANAME_.crl
+URI.1 = http://pki2.likeit.cn/$_CANAME_.crl
+
+[ likeca_alt_console.paadoo.net ]
+DNS.0 = console.paadoo.net
+
+[ likeca_alt_api.paadoo.net ]
+DNS.0 = api.paadoo.net
+DNS.1 = *.api.paadoo.net
+DNS.2 = *.paadoo.net
+
+[ likeca_alt_openapi.paadoo.net ]
+DNS.0 = openapi.paadoo.net
+DNS.1 = *.openapi.paadoo.net
+DNS.2 = *.paadoo.net
+
+[ likeca_alt_sync.paadoo.net ]
+DNS.0 = sync.paadoo.net
+DNS.1 = *.sync.paadoo.net
+DNS.2 = *.paadoo.net
+
+[ likeca_alt_s.likeit.cn ]
+DNS.0 = s.likeit.cn
+DNS.1 = *.s.likeit.cn
+DNS.2 = *.likeit.cn
+
+[ likeca_alt_bo.likeit.cn ]
+DNS.0 = bo.likeit.cn
+DNS.1 = *.bo.likeit.cn
+DNS.2 = *.likeit.cn
+
+[ likeca_alt_wechat.likeit.cn ]
+DNS.0 = wechat.likeit.cn
+DNS.1 = *.wechat.likeit.cn
+DNS.2 = *.likeit.cn
+
+[ likeca_alt_files.paadoo.net ]
+DNS.0 = files.paadoo.net
+DNS.1 = *.files.paadoo.net
+
+DNS.2 = dl.paadoo.net
+DNS.3 = *.dl.paadoo.net
+
+DNS.4 = logging.paadoo.net
+DNS.5 = *.logging.paadoo.net
+
+DNS.6 = files.likeit.cn
+DNS.7 = *.files.likeit.cn
+
+DNS.8 = dl.likeit.cn
+DNS.9 = *.dl.likeit.cn
+
+DNS.10 = ul.likeit.cn
+DNS.11 = *.ul.likeit.cn
+
+DNS.12 = *.paadoo.net
+DNS.13 = *.likeit.cn

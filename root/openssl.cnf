@@ -1,0 +1,7 @@
+# Self sign
+[ v3_ca ]
+basicConstraints = critical,CA:TRUE,pathlen:1
+keyUsage = critical,keyCertSign
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+keyUsage = digitalSignature,keyEncipherment,cRLSign,keyCertSign

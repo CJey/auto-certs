@@ -1,0 +1,6 @@
+#! /bin/sh
+
+_ROOT="$(pwd)" && cd "$(dirname "$0")" && ROOT="$(pwd)"
+cd "$ROOT"
+
+rm -f *.crt *.key *.csr

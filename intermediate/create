@@ -1,0 +1,48 @@
+#! /bin/sh -e
+
+_ROOT="$(pwd)" && cd "$(dirname "$0")" && ROOT="$(pwd)"
+cd "$ROOT"
+
+SUBJ="/C=CN/ST=Shanghai/L=Shanghai/O=LikeIT"
+
+if [ $# -ne 2 ]; then
+    echo "Usage: $0 {identify} {Common Name}"
+    echo "e.g. $0 LikeNetwork-IG1 'Like Network Intermediate - Generic 1'"
+    exit 1
+    NAME="LikeNetwork-IG1"
+    SUBJ="${SUBJ}/CN=Like Network Intermediate - Generic 1"
+else
+    NAME=$1
+    SUBJ="$SUBJ/CN=$2"
+fi
+
+ROOTCA="$(sed -rn 's;^ *_CANAME_ *= *(.+)$;\1;p' openssl.cnf)"
+if [ -z "$ROOTCA" ]; then
+    echo "ERROR: _CANAME_ not given in openssl.cnf file"
+    exit 1
+fi
+if [ ! -f "../root/$ROOTCA.crt" -o ! -f "../root/$ROOTCA.key" ]; then
+    echo "ERROR: RootCA not found, you must generate rootca first"
+    exit 1
+fi
+
+./init
+
+# RSA
+#openssl genrsa -out "certs/$NAME.key" 2048
+# ECDSA
+openssl ecparam -out "certs/$NAME.key" -name prime256v1 -genkey
+openssl req -new -key "certs/$NAME.key" -out "certs/$NAME.csr" -subj "$SUBJ"
+openssl ca -batch -config openssl.cnf -notext -in "certs/$NAME.csr" -out "certs/$NAME.crt"
+
+openssl ca -config openssl.cnf -gencrl | openssl crl -inform PEM -outform DER -out "$ROOTCA.crl"
+
+PASS="$(openssl rand -base64 32)"
+openssl ec -aes-256-cbc -passout "pass:$PASS" -in "certs/$NAME.key" -out "certs/$NAME.key"
+echo
+echo "WARNING!!! 请妥善保管好 $NAME 的私钥保护密码"
+echo
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo "PASSWORD = $PASS"
+echo +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+echo

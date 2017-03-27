@@ -1,0 +1,18 @@
+#! /bin/sh
+
+_ROOT="$(pwd)" && cd "$(dirname "$0")" && ROOT="$(pwd)"
+cd "$ROOT"
+
+INTERMEDIATECA="$(sed -rn 's;^ *_CANAME_ *= *(.+)$;\1;p' openssl.cnf)"
+if [ -z "$INTERMEDIATECA" ]; then
+    echo "ERROR: _CANAME_ not given in openssl.cnf file"
+    exit 1
+fi
+
+rm -f index.txt index.txt.old
+rm -f index.txt.attr index.txt.attr.old
+rm -f serial serial.old
+rm -f crlnumber crlnumber.old
+rm -rf newcerts
+rm -rf certs
+rm -f "$INTERMEDIATECA.crl"
